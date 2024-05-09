@@ -1,0 +1,13 @@
+streamlit
+pandas
+sqlalchemy # if you're using sqlio for SQL I/O with pandas
+altair
+folium
+streamlit-folium # if this is the correct package name for st_folium
+azure-storage-blob
+numpy
+Pillow # if you're working with image processing, this is often needed
+azure-functions
+flask
+azure-data-tables
+

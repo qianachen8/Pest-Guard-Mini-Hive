@@ -2,10 +2,16 @@ from azure.storage.blob import BlobServiceClient
 from azure.data.tables import TableServiceClient
 from datetime import datetime
 import os
+from dotenv import load_dotenv
 
+# Load environment variables
+load_dotenv()
+connect_str = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+
+if not connect_str:
+    raise ValueError("Azure Storage connection string is not set in .env file.")
 
 # Initialize the BlobServiceClient
-connect_str = 'DefaultEndpointsProtocol=https;AccountName=farmgazerpest;AccountKey=LPppF+JLCaiqTzd9J2Nb3IC+Sq58slLIatrs0P1ev7kUt0E5TohMjGPffghQ2rNoBghh0+fCv6fc+ASt/M+h1Q==;EndpointSuffix=core.windows.net'
 blob_service_client = BlobServiceClient.from_connection_string(connect_str)
 container_name = 'pestimage'  # Specify your container name
 
@@ -20,8 +26,6 @@ def setup_container():
             print("Unexpected error when creating container:", e)
         else:
             print("Container already exists.")
-
-
 
 def setup_table_client():
     table_service = TableServiceClient.from_connection_string(connect_str)
@@ -56,11 +60,11 @@ def upload_file_and_save_metadata(file_path, description):
 
     # Insert or merge the new entity into the table
     metadata = {
-        'PartitionKey': 'ImageDescription',  # Use a suitable partition key for your scenario
-        'RowKey': os.path.basename(file_path),  # Unique identifier for the row (filename used here)
+        'PartitionKey': 'ImageDescription',
+        'RowKey': os.path.basename(file_path),
         'Description': description,
         'ImageUrl': blob_url,
-        'FileName': os.path.basename(file_path),  # Storing the file name as well
+        'FileName': os.path.basename(file_path),
         'Timestamp': timestamp,  # Storing the upload timestamp
         'DT': timestamp
     }
@@ -75,4 +79,3 @@ if __name__ == "__main__":
     url, metadata = upload_file_and_save_metadata(image_path, image_description)
     print("Image URL:", url)
     print("Metadata stored:", metadata)
-
